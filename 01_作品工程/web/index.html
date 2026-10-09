@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>粮盾 数字孪生决策台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">粮</div>
+        <div><strong>粮盾</strong><span>寒地粮库协同决策</span></div>
+      </div>
+      <nav aria-label="主导航">
+        <button class="nav-item active"><span>01</span>运行总览</button>
+        <button class="nav-item"><span>02</span>仓群状态</button>
+        <button class="nav-item"><span>03</span>策略对比</button>
+        <button class="nav-item"><span>04</span>证据边界</button>
+      </nav>
+      <div class="source-note">
+        <span class="dot"></span>
+        <div><strong>数据链已固化</strong><br>NASA POWER + 合成粮情</div>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">DIGITAL TWIN OPERATIONS</p>
+          <h1>多仓通风协同决策台</h1>
+          <p class="subhead" id="scenarioText">加载场景中</p>
+        </div>
+        <div class="header-actions">
+          <label for="policySelect">决策策略</label>
+          <select id="policySelect">
+            <option value="OURS">粮盾协同策略</option>
+            <option value="B2_TEMP_GREEDY">粮温优先</option>
+            <option value="B1_FCFS">先到先得</option>
+            <option value="B0_RULE_UNCAPPED">独立阈值 不限电</option>
+          </select>
+          <span class="status"><i></i>仿真回放</span>
+        </div>
+      </header>
+
+      <section class="kpis" aria-label="关键指标">
+        <article><span>容量加权风险</span><strong id="riskNow">--</strong><small id="riskTrend">当前时点</small></article>
+        <article><span>站级功率</span><strong><b id="powerNow">--</b> kW</strong><small id="capState">上限 240 kW</small></article>
+        <article><span>高风险仓</span><strong><b id="highRiskNow">--</b> / 24</strong><small>相对风险 ≥ 0.65</small></article>
+        <article><span>活动风机</span><strong><b id="fansNow">--</b> 台</strong><small id="energyMean">累计能耗 --</small></article>
+      </section>
+
+      <section class="workspace">
+        <article class="panel warehouse-panel">
+          <div class="panel-head">
+            <div><p>仓群孪生视图</p><h2>24 座粮仓状态</h2></div>
+            <div class="legend"><span class="safe"></span>低风险<span class="watch"></span>关注<span class="alert"></span>高风险</div>
+          </div>
+          <div id="binGrid" class="bin-grid" aria-live="polite"></div>
+        </article>
+
+        <article class="panel decision-panel">
+          <div class="panel-head"><div><p>调度状态</p><h2>功率约束与通风窗口</h2></div><span id="windowState" class="window-chip">--</span></div>
+          <canvas id="powerGauge" width="680" height="210" aria-label="站级功率仪表"></canvas>
+          <dl class="decision-list">
+            <div><dt>室外气温</dt><dd id="outsideTemp">--</dd></div>
+            <div><dt>室外相对湿度</dt><dd id="outsideRh">--</dd></div>
+            <div><dt>最大等待时间</dt><dd id="waitNow">--</dd></div>
+          </dl>
+        </article>
+
+        <article class="panel trend-panel">
+          <div class="panel-head"><div><p>时序回放</p><h2>风险与功率轨迹</h2></div><span id="timeLabel">--</span></div>
+          <canvas id="trendChart" width="1260" height="330" aria-label="风险与功率时序图"></canvas>
+          <div class="timeline-row">
+            <button id="playButton" aria-label="播放回放">播放</button>
+            <input id="hourSlider" type="range" min="0" max="167" value="72" step="1">
+            <span>第 <b id="hourValue">72</b> 小时</span>
+          </div>
+        </article>
+      </section>
+
+      <footer><span id="disclosure"></span><span>模型版本 1.0 · 结果来自固定实验文件</span></footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "ours": {
+    "risk_exposure_mean": 58.702320287266346,
+    "risk_exposure_std": 2.9433126862059944,
+    "high_risk_bin_hours_mean": 487.3,
+    "energy_kwh_mean": 11681.5,
+    "peak_power_kw_mean": 238.7,
+    "cap_violation_hours_mean": 0.0,
+    "final_weighted_risk_mean": 0.1074758678848841,
+    "max_wait_hours_mean": 53.7
+  },
+  "relative_to_temp_greedy_pct": {
+    "risk_exposure": -0.2887705089339665,
+    "high_risk_bin_hours": -12.150712096628812,
+    "energy_kwh": -4.372278070663748,
+    "final_weighted_risk": 0.9038950854270977
+  },
+  "relative_to_fcfs_pct": {
+    "risk_exposure": -0.9928087764075944,
+    "high_risk_bin_hours": -24.30879155017085,
+    "energy_kwh": -7.718863065425873
+  },
+  "uncapped_baseline": {
+    "peak_power_kw": 703.4,
+    "cap_violation_hours_mean": 17.1
+  },
+  "boundary": "多种子合成仓群与简化温湿模型；不得解读为真实粮库控制效果。"
+}

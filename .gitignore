@@ -1,0 +1,28 @@
+.DS_Store
+._*
+~$*
+
+# Local build, render and browser artifacts
+.work/
+.chart-data-*/
+.playwright-cli/
+
+# Archived historical candidates and rollback copies
+99_归档/
+02_制作中/文档备份/
+02_制作中/PDF备份/
+
+# Python and local environments
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Duplicate files received at the project root; canonical inputs are in 00_官方原始材料/
+/中国仿真创新应用大赛报名工作通知 (1).pdf
+/中国仿真创新应用大赛报名表 (1).docx
+/微信图片_20261008183529_10_1608.jpg
+/项目研究报告 (1).doc

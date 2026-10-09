@@ -1,0 +1,25 @@
+{
+  "project": "粮盾：面向寒地粮库的多仓温湿耦合预测与通风协同决策平台",
+  "weather_source": "NASA POWER Hourly API, MERRA2/POWER",
+  "weather_period": "2025-10-01 to 2025-10-07, LST",
+  "coordinates": [
+    126.535,
+    45.804
+  ],
+  "weather_records": 168,
+  "main_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "main_bins": 24,
+  "power_cap_kw": 240,
+  "disclosure": "仓群、初始粮温、含水率、热点系数和风机配置为合成数据；结果仅用于模型比较。"
+}

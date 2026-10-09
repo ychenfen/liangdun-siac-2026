@@ -27,12 +27,38 @@ ORANGE = "#E57A2D"
 RED = "#C94C4C"
 NAVY = "#0B1F33"
 COLORS = [ORANGE, "#7A9E3A", BLUE, TEAL]
-FONT_PATH = "/System/Library/AssetsV2/com_apple_MobileAsset_Font7/3419f2a427639ad8c8e139149a287865a90fa17e.asset/AssetData/PingFang.ttc"
+# (常规体路径, 常规体字库序号, 粗体路径, 粗体字库序号)。按顺序取第一个存在的字体，
+# 便于在 macOS（PingFang）与 Linux（Noto Sans CJK）上复现；也可用环境变量指定。
+FONT_CANDIDATES = [
+    (
+        "/System/Library/AssetsV2/com_apple_MobileAsset_Font7/3419f2a427639ad8c8e139149a287865a90fa17e.asset/AssetData/PingFang.ttc",
+        0,
+        "/System/Library/AssetsV2/com_apple_MobileAsset_Font7/3419f2a427639ad8c8e139149a287865a90fa17e.asset/AssetData/PingFang.ttc",
+        2,
+    ),
+    ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 2, "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 2),
+    ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0, "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
+]
+
+
+def resolve_font_files() -> tuple[str, int, str, int]:
+    env_regular = os.environ.get("LIANGDUN_FONT_REGULAR")
+    env_bold = os.environ.get("LIANGDUN_FONT_BOLD")
+    if env_regular:
+        return env_regular, 0, env_bold or env_regular, 0
+    for regular, r_index, bold, b_index in FONT_CANDIDATES:
+        if Path(regular).exists() and Path(bold).exists():
+            return regular, r_index, bold, b_index
+    raise FileNotFoundError("未找到中文字体，请设置 LIANGDUN_FONT_REGULAR / LIANGDUN_FONT_BOLD")
+
+
+FONT_FILES = resolve_font_files()
 
 
 def font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
     scaled_size = max(1, round(size * FONT_SCALE))
-    return ImageFont.truetype(FONT_PATH, size=scaled_size, index=2 if bold else 0)
+    path, index = (FONT_FILES[2], FONT_FILES[3]) if bold else (FONT_FILES[0], FONT_FILES[1])
+    return ImageFont.truetype(path, size=scaled_size, index=index)
 
 
 def canvas(title: str, subtitle: str = "") -> tuple[Image.Image, ImageDraw.ImageDraw]:
@@ -50,13 +76,13 @@ def save(image: Image.Image, name: str) -> None:
     image.save(FIGURES / name, optimize=True)
 
 
-def draw_axes(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], y_min: float, y_max: float, y_label: str) -> None:
+def draw_axes(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], y_min: float, y_max: float, y_label: str, steps: int = 5) -> None:
     x0, y0, x1, y1 = box
     draw.line((x0, y0, x0, y1), fill=INK, width=2)
     draw.line((x0, y1, x1, y1), fill=INK, width=2)
-    for step in range(6):
-        y = y1 - (y1 - y0) * step / 5
-        value = y_min + (y_max - y_min) * step / 5
+    for step in range(steps + 1):
+        y = y1 - (y1 - y0) * step / steps
+        value = y_min + (y_max - y_min) * step / steps
         draw.line((x0, y, x1, y), fill=GRID, width=1)
         draw.text((x0 - 72, y - 12), f"{value:.1f}", font=font(17), fill=MUTED)
     draw.text((x0 - 70, y0 - 36), y_label, font=font(18, True), fill=INK)
@@ -113,7 +139,7 @@ def bar_panel(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], title: 
         bx1 = x0 + 42 + idx * slot + slot * 0.78
         by0 = base - (value / vmax) * (base - chart_top)
         draw.rounded_rectangle((bx0, by0, bx1, base), radius=6, fill=COLORS[idx])
-        draw.text((bx0, by0 - 30), format(value, fmt), font=font(17, True), fill=COLORS[idx])
+        draw.text((bx0, by0 - 30), format(value, fmt), font=font(17, True), fill=INK)
         draw.text((bx0 - 6, base + 14), label, font=font(16), fill=MUTED)
 
 
@@ -169,12 +195,15 @@ def ablation_figure() -> None:
     save(image, "fig_ablation.png")
 
 
+SCALE_Y_MIN, SCALE_Y_MAX = 50.0, 75.0
+
+
 def scale_figure() -> None:
     data = pd.read_csv(RESULTS / "scale.csv")
     grouped = data.groupby(["n_bins", "policy"], as_index=False).agg(risk=("risk_exposure", "mean"), wait=("max_wait_hours", "mean"))
     image, draw = canvas("仓群规模扩展", "每个规模 5 个随机种子；功率上限保持 240 kW，因此 36–48 仓属于拥塞压力测试")
     risk_box = (145, 220, 1510, 760)
-    draw_axes(draw, risk_box, 35, 90, "风险暴露")
+    draw_axes(draw, risk_box, SCALE_Y_MIN, SCALE_Y_MAX, "风险暴露（纵轴已放大，非零起点）")
     colors = {"B1_FCFS": "#7A9E3A", "B2_TEMP_GREEDY": BLUE, "OURS": TEAL}
     names = {"B1_FCFS": "先到先得", "B2_TEMP_GREEDY": "粮温优先", "OURS": "粮盾"}
     for idx, policy in enumerate(colors):
@@ -184,7 +213,7 @@ def scale_figure() -> None:
         points = []
         for xval, val in zip(xvals, vals):
             x = risk_box[0] + (xval - 12) / 36 * (risk_box[2] - risk_box[0])
-            y = risk_box[3] - (val - 35) / 55 * (risk_box[3] - risk_box[1])
+            y = risk_box[3] - (val - SCALE_Y_MIN) / (SCALE_Y_MAX - SCALE_Y_MIN) * (risk_box[3] - risk_box[1])
             points.append((x, y))
             draw.ellipse((x - 7, y - 7, x + 7, y + 7), fill=colors[policy])
             draw.text((x - 18, risk_box[3] + 18), str(int(xval)), font=font(18), fill=MUTED)

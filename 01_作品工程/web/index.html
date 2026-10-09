@@ -63,7 +63,7 @@
 
         <article class="panel decision-panel">
           <div class="panel-head"><div><p>调度状态</p><h2>功率约束与通风窗口</h2></div><span id="windowState" class="window-chip">--</span></div>
-          <canvas id="powerGauge" width="680" height="210" aria-label="站级功率仪表"></canvas>
+          <canvas id="powerGauge" role="img" aria-label="站级功率仪表"></canvas>
           <dl class="decision-list">
             <div><dt>室外气温</dt><dd id="outsideTemp">--</dd></div>
             <div><dt>室外相对湿度</dt><dd id="outsideRh">--</dd></div>
@@ -72,8 +72,12 @@
         </article>
 
         <article class="panel trend-panel">
-          <div class="panel-head"><div><p>时序回放</p><h2>风险与功率轨迹</h2></div><span id="timeLabel">--</span></div>
-          <canvas id="trendChart" width="1260" height="330" aria-label="风险与功率时序图"></canvas>
+          <div class="panel-head"><div><p>时序回放</p><h2>风险与功率轨迹</h2></div><div class="trend-meta"><span class="hint">悬停查看 · 点击定位时刻</span><span id="timeLabel">--</span></div></div>
+          <div class="chart-stack" id="trendWrap">
+            <canvas id="riskChart" role="img" aria-label="容量加权风险时序图"></canvas>
+            <canvas id="powerChart" role="img" aria-label="站级功率时序图"></canvas>
+            <div class="tooltip" id="tooltip" hidden></div>
+          </div>
           <div class="timeline-row">
             <button id="playButton" aria-label="播放回放">播放</button>
             <input id="hourSlider" type="range" min="0" max="167" value="72" step="1">

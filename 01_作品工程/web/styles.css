@@ -61,7 +61,7 @@ select { border: 1px solid var(--line); background: white; color: var(--ink); pa
 .bin .fan::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #a7b9b2; }
 .bin .fan.on { color: var(--green); font-weight: 700; }
 .bin .fan.on::before { background: var(--green-2); box-shadow: 0 0 0 3px rgba(32,166,120,.12); }
-.decision-panel canvas { width: 100%; height: 116px; margin-top: 14px; }
+.decision-panel canvas { display: block; width: 100%; height: 150px; margin-top: 12px; }
 .window-chip { color: var(--green); background: #e6f4ef; border-radius: 999px; padding: 7px 10px; font-size: 10px; }
 .window-chip.closed { color: #9b6012; background: #fbefd7; }
 .decision-list { margin: 8px 0 0; }
@@ -69,8 +69,15 @@ select { border: 1px solid var(--line); background: white; color: var(--ink); pa
 .decision-list dt { color: var(--muted); font-size: 11px; }
 .decision-list dd { margin: 0; font-size: 12px; font-weight: 700; }
 .trend-panel { grid-column: 1 / -1; }
-.trend-panel canvas { display: block; width: 100%; height: 200px; margin-top: 8px; }
+.chart-stack { position: relative; margin-top: 8px; }
+#riskChart { display: block; width: 100%; height: 190px; cursor: crosshair; }
+#powerChart { display: block; width: 100%; height: 130px; cursor: crosshair; }
+.tooltip { position: absolute; top: 8px; pointer-events: none; background: #102a43; color: #fff; font-size: 12px; line-height: 1.7; padding: 9px 11px; border-radius: 8px; white-space: nowrap; box-shadow: 0 8px 20px rgba(16,42,67,.2); }
+.tooltip[hidden] { display: none; }
+.trend-meta { display: flex; align-items: center; gap: 14px; }
+.hint { color: #8294a3; font-size: 11px; }
 #timeLabel { color: var(--muted); font-size: 11px; }
+.bin { cursor: default; }
 .timeline-row { display: grid; grid-template-columns: 62px 1fr 80px; align-items: center; gap: 12px; }
 .timeline-row button { border: 0; border-radius: 8px; background: var(--navy); color: white; padding: 8px 10px; cursor: pointer; }
 .timeline-row input { accent-color: var(--green); }
